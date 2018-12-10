@@ -1,5 +1,7 @@
 import sys
 import csv
+import time
+import statistics
 
 class Node:
 	def __init__(self, key):
@@ -64,7 +66,27 @@ class Graph:
 		first = max(self.nodes(), key = lambda node: node.deg())
 		first.colorize_node()
 
+	def count_nodes(self):
+		return len(self.node_dict)
+
+	def count_edges(self):
+		return sum([len(node.nbhood) for node in self.node_dict.values()])/2
+
+	def min_sat_degree(self):
+		return min([node.deg_sat() for node in self.nodes()])
+
+	def max_sat_degree(self):
+		return max([node.deg_sat() for node in self.nodes()])
+
+	def mean_sat_degree(self):
+		return statistics.mean([node.deg_sat() for node in self.nodes()])
+
+	def std_dev_sat_degree(self):
+		return statistics.stdev([node.deg_sat() for node in self.nodes()])
+
 def main(argv):
+	start = time.time()
+
 	graph_dict = {}
 	file = open(sys.argv[1], 'r')
 	for row in csv.reader(file):
@@ -75,7 +97,17 @@ def main(argv):
 	graph.colorize_graph()
 
 	for node in graph.nodes():
-		print(node.color)
+		print('%s,%d'%(node.key,node.color))
+
+	end = time.time()
+
+	print('#Nodes: %d'%(graph.count_nodes()))
+	print('#Edges: %d'%(graph.count_edges()))
+	print('Min sat degree: %d'%(graph.min_sat_degree()))
+	print('Max sat degree: %d'%(graph.max_sat_degree()))
+	print('Mean sat degree: %f'%(graph.mean_sat_degree()))
+	print('Std Dev sat degree: %f'%(graph.std_dev_sat_degree()))
+	print('Run time: %fs'%(end-start))
 
 
 if __name__ == '__main__':
