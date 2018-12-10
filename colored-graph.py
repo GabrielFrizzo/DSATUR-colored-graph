@@ -72,6 +72,9 @@ class Graph:
 	def count_edges(self):
 		return sum([len(node.nbhood) for node in self.node_dict.values()])/2
 
+	def count_colors(self):
+		return max([node.color for node in self.nodes()]) + 1
+
 	def min_sat_degree(self):
 		return min([node.deg_sat() for node in self.nodes()])
 
@@ -96,8 +99,11 @@ def main(argv):
 	graph = Graph(graph_dict)
 	graph.colorize_graph()
 
-	for node in graph.nodes():
-		print('%s,%d'%(node.key,node.color))
+	with open('saida.csv', 'w') as output:
+		writer = csv.writer(output)
+
+		for node in graph.nodes():
+			writer.writerow([node.key,str(node.color)])
 
 	end = time.time()
 
@@ -107,6 +113,7 @@ def main(argv):
 	print('Max sat degree: %d'%(graph.max_sat_degree()))
 	print('Mean sat degree: %f'%(graph.mean_sat_degree()))
 	print('Std Dev sat degree: %f'%(graph.std_dev_sat_degree()))
+	print('#Colors: %d'%(graph.count_colors()))
 	print('Run time: %fs'%(end-start))
 
 
